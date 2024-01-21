@@ -1,6 +1,5 @@
 alembic==1.7.7
 auth0-python==4.7.0
-databases==0.6.1
 fastapi==0.109.0
 fastapi_utils==0.2.1
 loguru==0.6.0

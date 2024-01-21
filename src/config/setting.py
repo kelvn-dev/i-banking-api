@@ -9,6 +9,13 @@ class Settings(BaseSettings):
     auth0_audience: str
     auth0_algorithm: str
 
+    db_uri: AnyHttpUrl
+    # db_password: str
+    # db_host: str
+    # db_port: str
+    # db_name: str
+    db_schema: str
+
     class Config:
         env_file = ".env"
         case_sensitive = False
