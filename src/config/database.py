@@ -18,7 +18,7 @@ engine = create_engine(
     url=db_connection_url,
     echo=False,
     connect_args={
-        "options": f"-csearch_path={settings.DB_SCHEMA}",
+        "options": f"-csearch_path={settings.db_schema}",
         "options": "-c timezone=utc",
     },
 )

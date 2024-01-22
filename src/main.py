@@ -5,8 +5,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from loguru import logger
 
+from config.database import create_db, create_schema, create_tables
 from config.setting import settings
-from routes.endpoints import create_endpoints
+from routers.endpoints import create_endpoints
 from security.user_session import get_current_user
 
 app = FastAPI()
@@ -29,6 +30,9 @@ create_endpoints(app)
 
 @app.on_event("startup")
 def app_startup():
+    create_db()
+    create_schema()
+    create_tables()
     pass
 
 

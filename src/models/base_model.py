@@ -1,4 +1,4 @@
-from fastapi_utils.guid_type import GUID, GUID_SERVER_DEFAULT_POSTGRESQL
+from fastapi_restful.guid_type import GUID, GUID_SERVER_DEFAULT_POSTGRESQL
 from sqlalchemy import Column, DateTime, String
 
 from config.database import Base

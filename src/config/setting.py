@@ -1,24 +1,29 @@
 from functools import lru_cache
 
-from pydantic import AnyHttpUrl, BaseSettings, EmailStr
+from pydantic import AnyHttpUrl, EmailStr, PostgresDsn
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
     auth0_domain: str
-    auth0_issuer: AnyHttpUrl
+    auth0_issuer: str
     auth0_audience: str
     auth0_algorithm: str
 
-    db_uri: AnyHttpUrl
+    auth0_client_id: str
+    auth0_client_secret: str
+    auth0_client_audience: str
+
+    db_uri: str
     # db_password: str
     # db_host: str
     # db_port: str
     # db_name: str
     db_schema: str
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
+    model_config = SettingsConfigDict(
+        env_file=".env", case_sensitive=False, extra="ignore"
+    )
 
 
 # Reading the env file is costly, especially when read for each request. So cache the values using lru_cache.

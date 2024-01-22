@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 
-from routes import user_route
+from routers import user_router
 
 PREFIX = "/api/v1"
 
 
 def create_endpoints(app: FastAPI):
-    app.include_router(user_route.router)
+    app.include_router(user_router.router)

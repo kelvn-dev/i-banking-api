@@ -1,14 +1,11 @@
 import uuid
-from math import ceil
 from typing import Generic, TypeVar
 
 from fastapi import HTTPException
-from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
-from sqlalchemy import asc, desc, func
-from sqlalchemy.orm import Query, Session
+from sqlalchemy.orm import Session
 
-from utils import set_value
+from utils.helper_utils import set_value
 
 SchemaCreateType = TypeVar("SchemaCreateType", bound=BaseModel)
 SchemaUpdateType = TypeVar("SchemaUpdateType", bound=BaseModel)
@@ -24,13 +21,18 @@ class BaseService(Generic[SchemaCreateType, SchemaUpdateType]):
         session.add(model)
         return model
 
-    def get_by_id(self, session: Session, id: uuid.UUID):
-        return session.query(self.Model).filter(self.Model.id == id).first()
+    def get_by_id(self, session: Session, id: uuid.UUID, raise_exception=True):
+        model = session.query(self.Model).filter(self.Model.id == id).first()
+        if not model and raise_exception:
+            raise HTTPException(
+                status_code=404, detail=f"{self.Model.__name__} not found with id {id}"
+            )
+        return model
 
     def update_by_id(self, session: Session, id: uuid.UUID, payload: SchemaUpdateType):
         model = self.get_by_id(session, id)
         set_value(model, payload)
-        return
+        return model
 
     def delete_by_id(self, session: Session, id: uuid.UUID):
         model = self.get_by_id(session, id)
