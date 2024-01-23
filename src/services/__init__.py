@@ -1,1 +1,2 @@
+from services.semester_service import semester_service
 from services.user_service import user_service
