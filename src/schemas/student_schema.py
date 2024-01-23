@@ -1,6 +1,7 @@
 import uuid
 
 from schemas.base_schema import BaseSchema
+from schemas.tuition_schema import TuitionResponse
 
 
 class StudentRequest(BaseSchema):
@@ -9,4 +10,8 @@ class StudentRequest(BaseSchema):
 
 
 class StudentResponse(StudentRequest):
-    pass
+    id: uuid.UUID
+
+
+class StudentWithTuiTionResponse(StudentResponse):
+    tuition: list[TuitionResponse]

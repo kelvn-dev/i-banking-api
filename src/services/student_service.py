@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy import and_
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from models import Student
 from schemas.student_schema import StudentRequest
@@ -18,6 +18,22 @@ class StudentService(BaseService[StudentRequest, StudentRequest]):
     ):
         student = (
             session.query(Student).filter(Student.student_id == student_id).first()
+        )
+        if not student and raise_exception:
+            raise HTTPException(
+                status_code=404,
+                detail=f"{self.Model.__name__} not found with student id {student_id}",
+            )
+        return student
+
+    def get_by_student_id_with_tuition(
+        self, session: Session, student_id: str, raise_exception=True
+    ):
+        student = (
+            session.query(Student)
+            .filter(Student.student_id == student_id)
+            .options(joinedload(Student.tuition))
+            .first()
         )
         if not student and raise_exception:
             raise HTTPException(

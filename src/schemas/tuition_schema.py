@@ -15,3 +15,4 @@ class TuitionRequest(BaseSchema):
 
 class TuitionResponse(TuitionRequest):
     id: uuid.UUID
+    is_paid: bool

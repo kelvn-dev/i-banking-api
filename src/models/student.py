@@ -8,4 +8,4 @@ class Student(BaseModel):
     __tablename__ = "student"
     student_id = Column(String(255), nullable=False, unique=True)
     full_name = Column(String(255), nullable=False)
-    tuitions = relationship("Tuition")
+    tuition = relationship("Tuition")
