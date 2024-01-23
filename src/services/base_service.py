@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from utils.helper_utils import set_value
+from utils.mapping_utils import pydantic_to_sqlalchemy_model
 
 SchemaCreateType = TypeVar("SchemaCreateType", bound=BaseModel)
 SchemaUpdateType = TypeVar("SchemaUpdateType", bound=BaseModel)
@@ -16,8 +17,8 @@ class BaseService(Generic[SchemaCreateType, SchemaUpdateType]):
         self.Model = Model
 
     def create(self, session: Session, payload: SchemaCreateType):
-        model = self.Model()
-        set_value(model, payload)
+        model = self.Model(**pydantic_to_sqlalchemy_model(payload))
+        # set_value(model, payload)
         session.add(model)
         return model
 

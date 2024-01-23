@@ -6,5 +6,6 @@ from models.base_model import BaseModel
 
 class Student(BaseModel):
     __tablename__ = "student"
-    student_id = Column(String(255), nullable=False)
+    student_id = Column(String(255), nullable=False, unique=True)
     full_name = Column(String(255), nullable=False)
+    tuitions = relationship("Tuition")
