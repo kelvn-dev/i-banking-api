@@ -15,11 +15,9 @@ class Settings(BaseSettings):
     auth0_client_audience: str
 
     db_uri: str
-    # db_password: str
-    # db_host: str
-    # db_port: str
-    # db_name: str
     db_schema: str
+
+    otp_secret: str
 
     model_config = SettingsConfigDict(
         env_file=".env", case_sensitive=False, extra="ignore"
