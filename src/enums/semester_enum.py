@@ -2,6 +2,6 @@ from enum import Enum, IntEnum
 
 
 class SemesterCode(IntEnum):
-    first = 1
-    second = 2
-    third = 3
+    FIRST = 1
+    SECOND = 2
+    THIRD = 3
