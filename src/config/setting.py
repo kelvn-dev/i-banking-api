@@ -19,6 +19,9 @@ class Settings(BaseSettings):
 
     otp_secret: str
 
+    sendgrid_api_key: str
+    sendgrid_email_sender: EmailStr
+
     model_config = SettingsConfigDict(
         env_file=".env", case_sensitive=False, extra="ignore"
     )

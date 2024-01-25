@@ -7,16 +7,16 @@ from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
 from enums.transaction_enum import TransactionStatus
-from models import Transaction
+from models import Transaction, User
 from schemas.transaction_schema import TransactionCreate, TransactionRequest
-from services import user_service
 from services.base_service import BaseService, SchemaCreateType
+from services.provider import sendgrid_service
 from utils.otp_utils import generate_otp_secret_key, generate_totp_code
 
 
 class TransactionService(BaseService[TransactionRequest, TransactionRequest]):
     def validate_transaction_creation(
-        self, session: Session, payload: TransactionRequest, user_id: str
+        self, session: Session, payload: TransactionRequest, user_id: uuid.UUID
     ):
         """
         Iterates through transactions with same tuition_id and raise exception if:
@@ -42,9 +42,10 @@ class TransactionService(BaseService[TransactionRequest, TransactionRequest]):
                     detail=f"Requested transaction hasn't expired yet. Please get otp in email to complete transaction",
                 )
 
-    def create(self, session: Session, payload: TransactionRequest, user_id: str):
-        self.validate_transaction_creation(session, payload, user_id)
+    def create(self, session: Session, payload: TransactionRequest, user: User):
+        self.validate_transaction_creation(session, payload, user.id)
         otp_secret = generate_otp_secret_key()
+        otp_code = generate_totp_code(otp_secret)
         # UNIX style timestamp representing 5 minutes from now
         otp_expiry_time = int(time.time() + 300)
         payload = TransactionCreate(
@@ -52,9 +53,10 @@ class TransactionService(BaseService[TransactionRequest, TransactionRequest]):
             status=TransactionStatus.PENDING,
             otp_secret=otp_secret,
             otp_expiry_time=otp_expiry_time,
-            user_id=user_id,
+            user_id=user.id,
         )
-        return super().create(session, payload)
+        super().create(session, payload)
+        sendgrid_service.send_otp_verification(user, otp_code)
 
     def get_all_by_tuition_id(
         self, session: Session, tuition_id: uuid.UUID

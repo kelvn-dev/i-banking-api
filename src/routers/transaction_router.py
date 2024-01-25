@@ -16,7 +16,7 @@ class TransactionRouter:
     @router.post("/transactions")
     def create(self, payload: TransactionRequest):
         transaction_service.create(
-            self.current_user.session, payload, self.current_user.user_info.id
+            self.current_user.session, payload, self.current_user.user_info
         )
         self.current_user.session.commit()
         return
