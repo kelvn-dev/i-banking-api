@@ -1,7 +1,8 @@
 import time
 from datetime import datetime, timezone
+from functools import wraps
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from loguru import logger
 from sqlalchemy import event
 from sqlalchemy.orm import Session
@@ -21,9 +22,10 @@ from services.user_service import user_service
 
 
 class UserSession:
-    def __init__(self, user_info, session):
-        self.user_info: User = user_info
-        self.session: Session = session
+    def __init__(self, user_info: User, session: Session, permissions: list[str]):
+        self.user_info = user_info
+        self.session = session
+        self.permissions = permissions
 
         @event.listens_for(Base, "before_insert", propagate=True)
         def before_insert(mapper, connect, target):
@@ -42,15 +44,41 @@ auth0_oidc = Auth0Oidc()
 async def get_current_user(
     payload=Depends(auth0_oidc.auth), session: Session = Depends(get_session)
 ):
-    auth0_user_id = payload["sub"]
+    auth0_user_id = payload.get("sub")
+    permissions = payload.get("permissions")
     user = user_service.get_by_auth0_user_id(session, auth0_user_id, False)
     if not user:
         auth0_user = auth0_service.get_by_id(auth0_user_id)
         logger.debug(auth0_user)
         user_schema = UserCreate(
             auth0_user_id=auth0_user_id,
-            email=auth0_user["email"],
+            email=auth0_user.get("email"),
             balances=10_000_000,
         )
         user = user_service.create(session, user_schema)
-    yield UserSession(user, session)
+    yield UserSession(user, session, permissions)
+
+
+#########################################################################################
+#
+# Authorization
+#
+#########################################################################################
+
+
+def authorize(required_permissions: list[str]):
+    def decorator_auth(func):
+        @wraps(func)
+        def wrapper_auth(*args, **kwargs):
+            self = kwargs["self"]
+            current_user: UserSession = self.current_user
+
+            token_permissions_set = set(current_user.permissions)
+            required_permissions_set = set(required_permissions)
+            if required_permissions_set.issubset(token_permissions_set):
+                return func(*args, **kwargs)
+            raise HTTPException(status_code=403, detail="Access denied")
+
+        return wrapper_auth
+
+    return decorator_auth

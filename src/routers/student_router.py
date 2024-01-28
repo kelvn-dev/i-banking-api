@@ -3,7 +3,7 @@ from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
 
 from schemas.student_schema import StudentRequest, StudentWithTuiTionResponse
-from security.user_session import UserSession, get_current_user
+from security.user_session import UserSession, authorize, get_current_user
 from services.student_service import student_service
 
 router = InferringRouter(tags=["Student"])
@@ -14,6 +14,7 @@ class StudentRouter:
     current_user: UserSession = Depends(get_current_user)
 
     @router.post("/students")
+    @authorize(["write:students"])
     def create(self, payload: StudentRequest):
         student_service.create(self.current_user.session, payload)
         self.current_user.session.commit()
