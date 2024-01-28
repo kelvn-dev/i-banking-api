@@ -15,8 +15,8 @@ from schemas.transaction_schema import (
 )
 from services.base_service import BaseService
 from services.provider import sendgrid_service
-from services.student_service import student_service
 from services.tuition_service import tuition_service
+from services.user_service import user_service
 from utils.otp_utils import (
     generate_otp_secret_key,
     generate_totp_code,
@@ -30,40 +30,27 @@ class TransactionService(BaseService[Transaction]):
     ):
         """
         Iterates through transactions with same tuition_id and raise exception if:
-        - Transaction has been completed
         - Transaction requested by the same user hasn't expired yet
         """
         now = int(time.time())
         transactions = self.get_all_by_tuition_id(session, tuition_id)
 
         for transaction in transactions:
-            if transaction.status == TransactionStatus.COMPLETED:
-                raise HTTPException(
-                    status_code=409,
-                    detail=f"Transaction has been completed for tuition id {tuition_id} by user id {transaction.user_id} at {transaction.updated_time}",
-                )
             if transaction.user_id == user_id and transaction.otp_expiry_time > now:
                 raise HTTPException(
                     status_code=409,
                     detail=f"Requested transaction hasn't expired yet. Please get otp in email to complete transaction",
                 )
 
-    def validate_transaction_completion(self, session: Session, tuition_id: uuid.UUID):
-        """
-        Iterates through transactions with same tuition_id and raise exception if:
-        - Transaction has been completed
-        """
-        transactions = self.get_all_by_tuition_id(session, tuition_id)
-
-        for transaction in transactions:
-            if transaction.status == TransactionStatus.COMPLETED:
-                raise HTTPException(
-                    status_code=409,
-                    detail=f"Transaction has been completed for tuition id {tuition_id} by user id {transaction.user_id} at {transaction.updated_time}",
-                )
-
     def create(self, session: Session, user: User, payload: TransactionRequest):
-        tuition = tuition_service.get_by_id(session=session, id=payload.tuition_id)
+        tuition = tuition_service.get_by_id_for_update(
+            session=session, id=payload.tuition_id
+        )
+        if tuition.is_paid:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Tuition has been paid by user {tuition.updated_by} at {tuition.updated_time}",
+            )
         if user.balances < tuition.charges:
             raise HTTPException(status_code=400, detail="Insufficient balances")
 
@@ -81,6 +68,7 @@ class TransactionService(BaseService[Transaction]):
             user_id=user.id,
         )
         transaction = super().create(session, payload)
+        session.commit()
         sendgrid_service.send_otp_verification(user, otp_code)
         return transaction
 
@@ -95,13 +83,23 @@ class TransactionService(BaseService[Transaction]):
         return transactions
 
     def update_by_id(
-        self, session: Session, user: User, id: uuid.UUID, payload: TransactionUpdate
+        self,
+        session: Session,
+        user_id: uuid.UUID,
+        id: uuid.UUID,
+        payload: TransactionUpdate,
     ):
-        transaction = self.get_by_id(session, id)
+        user = user_service.get_by_id_for_update(session, user_id)
+        transaction = self.get_by_id_for_update(session, id)
         if transaction.user_id != user.id:
             raise HTTPException(status_code=403, detail="Access denied")
 
-        tuition = tuition_service.get_by_id(session, transaction.tuition_id)
+        tuition = tuition_service.get_by_id_for_update(session, transaction.tuition_id)
+        if tuition.is_paid:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Tuition has been paid by user {tuition.updated_by} at {tuition.updated_time}",
+            )
         if user.balances < tuition.charges:
             raise HTTPException(status_code=400, detail="Insufficient balances")
 
@@ -114,17 +112,14 @@ class TransactionService(BaseService[Transaction]):
         if not verify_totp_code(transaction.otp_secret, 300, payload.otp_code):
             raise HTTPException(status_code=403, detail="Access denied")
 
-        self.validate_transaction_completion(session, tuition_id=tuition.id)
-
         transaction.status = TransactionStatus.COMPLETED
         tuition.is_paid = True
         user.balances -= tuition.charges
+        session.commit()
 
-        student = student_service.get_by_id(session, tuition.student_id)
         sendgrid_service.send_successful_payment_notification(
-            user=user, student=student, tuition=tuition
+            user=user, student=tuition.student, tuition=tuition
         )
-
         return
 
 

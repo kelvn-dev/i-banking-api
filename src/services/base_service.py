@@ -32,6 +32,21 @@ class BaseService(Generic[ModelType]):
             )
         return model
 
+    def get_by_id_for_update(
+        self, session: Session, id: uuid.UUID, raise_exception=True
+    ) -> ModelType:
+        model = (
+            session.query(self.Model)
+            .filter(self.Model.id == id)
+            .with_for_update()
+            .first()
+        )
+        if not model and raise_exception:
+            raise HTTPException(
+                status_code=404, detail=f"{self.Model.__name__} not found with id {id}"
+            )
+        return model
+
     def update_by_id(self, session: Session, id: uuid.UUID, payload: BaseModel):
         # model = self.get_by_id(session, id)
         # set_value(model, payload)

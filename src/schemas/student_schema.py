@@ -1,7 +1,7 @@
 import uuid
 
+from enums.semester_enum import SemesterCode
 from schemas.base_schema import BaseSchema
-from schemas.tuition_schema import TuitionResponse
 
 
 class StudentRequest(BaseSchema):
@@ -9,9 +9,15 @@ class StudentRequest(BaseSchema):
     full_name: str
 
 
+class TuitionResponse(BaseSchema):
+    id: uuid.UUID
+    is_paid: bool
+    charges: float
+    student_id: uuid.UUID
+    semester_year: int
+    semester_code: SemesterCode
+
+
 class StudentResponse(StudentRequest):
     id: uuid.UUID
-
-
-class StudentWithTuiTionResponse(StudentResponse):
     tuition: list[TuitionResponse]

@@ -26,16 +26,14 @@ class TransactionRouter:
             user=self.current_user.user_info,
             payload=payload,
         )
-        self.current_user.session.commit()
         return transaction
 
     @router.put("/transactions/{id}")
     def update_by_id(self, id: uuid.UUID, payload: TransactionUpdate):
         transaction_service.update_by_id(
             session=self.current_user.session,
-            user=self.current_user.user_info,
+            user_id=self.current_user.user_info.id,
             id=id,
             payload=payload,
         )
-        self.current_user.session.commit()
         return

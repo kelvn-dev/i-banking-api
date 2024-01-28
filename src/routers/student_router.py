@@ -2,7 +2,7 @@ from fastapi import Depends
 from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
 
-from schemas.student_schema import StudentRequest, StudentWithTuiTionResponse
+from schemas.student_schema import StudentRequest, StudentResponse
 from security.user_session import UserSession, authorize, get_current_user
 from services.student_service import student_service
 
@@ -21,7 +21,7 @@ class StudentRouter:
         return
 
     @router.get("/students/{student_id}")
-    def get_by_student_id(self, student_id: str) -> StudentWithTuiTionResponse:
+    def get_by_student_id(self, student_id: str) -> StudentResponse:
         return student_service.get_by_student_id_with_tuition(
             self.current_user.session, student_id
         )

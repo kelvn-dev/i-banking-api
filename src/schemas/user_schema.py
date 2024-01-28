@@ -3,8 +3,9 @@ from typing import Optional
 
 from pydantic import EmailStr
 
+from enums.semester_enum import SemesterCode
+from enums.transaction_enum import TransactionStatus
 from schemas.base_schema import BaseSchema
-from schemas.transaction_schema import TransactionResponse
 
 
 class UserCreate(BaseSchema):
@@ -16,6 +17,31 @@ class UserCreate(BaseSchema):
 class UserUpdate(BaseSchema):
     full_name: Optional[str]
     phone: Optional[str]
+
+
+class StudentResponse(BaseSchema):
+    id: uuid.UUID
+    student_id: str
+    full_name: str
+
+
+class TuitionResponse(BaseSchema):
+    id: uuid.UUID
+    charges: float
+    semester_year: int
+    semester_code: SemesterCode
+    is_paid: bool
+    student_id: uuid.UUID
+    student: StudentResponse
+
+
+class TransactionResponse(BaseSchema):
+    id: uuid.UUID
+    user_id: uuid.UUID
+    status: TransactionStatus
+    tuition: TuitionResponse
+    created_time: int
+    updated_time: Optional[int]
 
 
 class UserProfile(BaseSchema):
