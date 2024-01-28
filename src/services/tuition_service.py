@@ -10,7 +10,7 @@ from services import student_service
 from services.base_service import BaseService, SchemaCreateType
 
 
-class TuitionService(BaseService[TuitionRequest, TuitionRequest]):
+class TuitionService(BaseService[Tuition, TuitionRequest, TuitionRequest]):
     def create(self, session: Session, payload: TuitionRequest):
         student_service.get_by_id(session, payload.student_id)
         if self.get_by_student_and_semester(

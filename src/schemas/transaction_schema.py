@@ -18,6 +18,11 @@ class TransactionCreate(TransactionRequest):
     user_id: uuid.UUID
 
 
+class TransactionUpdate(BaseSchema):
+    otp_code: str
+
+
 class TransactionResponse(TransactionRequest):
     id: uuid.UUID
-    is_paid: bool
+    user_id: uuid.UUID
+    status: TransactionStatus

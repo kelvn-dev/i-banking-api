@@ -1,8 +1,14 @@
+import uuid
+
 from fastapi import Depends
 from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
 
-from schemas.transaction_schema import TransactionRequest
+from schemas.transaction_schema import (
+    TransactionRequest,
+    TransactionResponse,
+    TransactionUpdate,
+)
 from security.user_session import UserSession, get_current_user
 from services import transaction_service
 
@@ -14,9 +20,21 @@ class TransactionRouter:
     current_user: UserSession = Depends(get_current_user)
 
     @router.post("/transactions")
-    def create(self, payload: TransactionRequest):
-        transaction_service.create(
-            self.current_user.session, payload, self.current_user.user_info
+    def create(self, payload: TransactionRequest) -> TransactionResponse:
+        transaction = transaction_service.create(
+            session=self.current_user.session,
+            user=self.current_user.user_info,
+            payload=payload,
         )
         self.current_user.session.commit()
+        return transaction
+
+    @router.put("/transactions/{id}")
+    def update_by_id(self, id: uuid.UUID, payload: TransactionUpdate):
+        transaction_service.update_by_id(
+            session=self.current_user.session,
+            user=self.current_user.user_info,
+            id=id,
+            payload=payload,
+        )
         return

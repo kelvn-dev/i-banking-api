@@ -7,7 +7,7 @@ from schemas.student_schema import StudentRequest
 from services.base_service import BaseService, SchemaCreateType
 
 
-class StudentService(BaseService[StudentRequest, StudentRequest]):
+class StudentService(BaseService[Student, StudentRequest, StudentRequest]):
     def create(self, session: Session, payload: StudentRequest):
         if self.get_by_student_id(session, payload.student_id, raise_exception=False):
             raise HTTPException(status_code=409)

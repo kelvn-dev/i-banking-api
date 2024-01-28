@@ -7,7 +7,7 @@ from schemas.user_schema import UserCreate
 from services.base_service import BaseService
 
 
-class UserService(BaseService[UserCreate, BaseModel]):
+class UserService(BaseService[User, UserCreate, BaseModel]):
     def get_by_auth0_user_id(
         self, session: Session, auth0_user_id: str, raise_exception=True
     ):
