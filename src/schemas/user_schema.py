@@ -15,8 +15,8 @@ class UserCreate(BaseSchema):
 
 
 class UserUpdate(BaseSchema):
-    full_name: Optional[str]
-    phone: Optional[str]
+    full_name: str = None
+    phone: str = None
 
 
 class StudentResponse(BaseSchema):

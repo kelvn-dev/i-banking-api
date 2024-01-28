@@ -14,7 +14,7 @@ def pydantic_to_sqlalchemy_model(schema: BaseSchema):
     to a dictionary containing SQLAlchemy models.
     Only works if nested schemas have specified the Meta.orm_model.
     """
-    parsed_schema = schema.model_dump()
+    parsed_schema = schema.model_dump(exclude_unset=True, exclude_none=True)
     logger.debug(parsed_schema)
     for key, value in parsed_schema.items():
         try:

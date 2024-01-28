@@ -50,8 +50,8 @@ class BaseService(Generic[ModelType]):
     def update_by_id(self, session: Session, id: uuid.UUID, payload: BaseModel):
         # model = self.get_by_id(session, id)
         # set_value(model, payload)
-        session.query(ModelType).filter(ModelType.id == id).update(
-            **pydantic_to_sqlalchemy_model(payload)
+        session.query(self.Model).filter(self.Model.id == id).update(
+            pydantic_to_sqlalchemy_model(payload)
         )
         return
 

@@ -44,8 +44,9 @@ class UserService(BaseService[User]):
         return user
 
     def update_profile(self, session: Session, user: User, payload: UserUpdate):
-        user.phone = payload.phone
-        user.full_name = payload.full_name
+        user_service.update_by_id(session, user.id, payload)
+        # user.phone = payload.phone.
+        # user.full_name = payload.full_name
         return
 
 
