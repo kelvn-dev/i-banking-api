@@ -22,3 +22,4 @@ class Transaction(BaseModel):
     otp_expiry_time = Column(Integer, nullable=False)
     user_id = Column(GUID, ForeignKey("app_user.id"))
     tuition_id = Column(GUID, ForeignKey("tuition.id"))
+    tuition = relationship("Tuition", uselist=False)

@@ -1,23 +1,27 @@
 import uuid
+from typing import Optional
 
 from pydantic import EmailStr
 
 from schemas.base_schema import BaseSchema
+from schemas.transaction_schema import TransactionResponse
 
 
 class UserCreate(BaseSchema):
     auth0_user_id: str
-    username: str
     email: EmailStr
-    full_name: str
-    phone: str
     balances: float
+
+
+class UserUpdate(BaseSchema):
+    full_name: Optional[str]
+    phone: Optional[str]
 
 
 class UserProfile(BaseSchema):
     id: uuid.UUID
-    username: str
     email: EmailStr
-    full_name: str
-    phone: str
+    full_name: Optional[str]
+    phone: Optional[str]
     balances: float
+    transactions: list[TransactionResponse]

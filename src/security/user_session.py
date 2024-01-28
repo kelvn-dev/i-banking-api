@@ -1,3 +1,4 @@
+import time
 from datetime import datetime, timezone
 
 from fastapi import Depends
@@ -27,12 +28,12 @@ class UserSession:
         @event.listens_for(Base, "before_insert", propagate=True)
         def before_insert(mapper, connect, target):
             target.created_by = self.user_info.email
-            target.created_time = datetime.utcnow().replace(tzinfo=timezone.utc)
+            target.created_time = int(time.time())
 
         @event.listens_for(Base, "before_update", propagate=True)
         def before_update(mapper, connect, target):
             target.updated_by = self.user_info.email
-            target.updated_time = datetime.utcnow().replace(tzinfo=timezone.utc)
+            target.updated_time = int(time.time())
 
 
 auth0_oidc = Auth0Oidc()
@@ -46,13 +47,9 @@ async def get_current_user(
     if not user:
         auth0_user = auth0_service.get_by_id(auth0_user_id)
         logger.debug(auth0_user)
-        auth0_user_metadata = auth0_user["user_metadata"]
         user_schema = UserCreate(
             auth0_user_id=auth0_user_id,
-            username=auth0_user["username"],
             email=auth0_user["email"],
-            full_name=auth0_user_metadata["full_name"],
-            phone=auth0_user_metadata["phone"],
             balances=10_000_000,
         )
         user = user_service.create(session, user_schema)

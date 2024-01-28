@@ -13,6 +13,13 @@ class TuitionRequest(BaseSchema):
     semester_code: SemesterCode
 
 
+class StudentResponse(BaseSchema):
+    id: uuid.UUID
+    student_id: str
+    full_name: str
+
+
 class TuitionResponse(TuitionRequest):
     id: uuid.UUID
     is_paid: bool
+    student: StudentResponse

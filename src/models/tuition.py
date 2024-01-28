@@ -20,3 +20,4 @@ class Tuition(BaseModel):
     semester_year = Column(SmallInteger(), nullable=False)
     semester_code = Column(SmallInteger(), nullable=False)
     student_id = Column(GUID, ForeignKey("student.id", ondelete="SET NULL"))
+    student = relationship("Student", uselist=False)
