@@ -10,7 +10,15 @@ from loguru import logger
 from config.database import create_db, create_schema, create_tables
 from routers.endpoints import create_endpoints
 
-app = FastAPI()
+app = FastAPI(
+    title="iBanking API",
+    version="1.0.0",
+    contact={
+        "name": "Kelvin",
+        "email": "kelvn.developer@gmail.com",
+        "url": "https://github.com/kelvn-dev",
+    },
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
