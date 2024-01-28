@@ -1,0 +1,26 @@
+version: "3.8"
+name: "ibanking-api"
+services:
+  db:
+    container_name: postgresql
+    image: postgres:14.1-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - ibanking-network
+    volumes:
+      - ./volumes/db:/var/lib/postgresql/data
+  api:
+    container_name: ibanking-api
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    ports:
+      - "10001:10001"
+    networks:
+      - ibanking-network
+networks:
+  ibanking-network: {}

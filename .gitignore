@@ -160,7 +160,7 @@ cython_debug/
 assets/reports/jasper/MyReports/.metadata
 
 # mounting docker data volumes
-docker_data/
+**/volumes
 
 # macOS
 .DS_Store
