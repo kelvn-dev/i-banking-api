@@ -10,15 +10,13 @@ from utils.helper_utils import set_value
 from utils.mapping_utils import pydantic_to_sqlalchemy_model
 
 ModelType = TypeVar("ModelType", bound=BaseModel)
-SchemaCreateType = TypeVar("SchemaCreateType", bound=BaseModel)
-SchemaUpdateType = TypeVar("SchemaUpdateType", bound=BaseModel)
 
 
-class BaseService(Generic[ModelType, SchemaCreateType, SchemaUpdateType]):
+class BaseService(Generic[ModelType]):
     def __init__(self, Model) -> None:
         self.Model = Model
 
-    def create(self, session: Session, payload: SchemaCreateType) -> ModelType:
+    def create(self, session: Session, payload: BaseModel) -> ModelType:
         model = self.Model(**pydantic_to_sqlalchemy_model(payload))
         # set_value(model, payload)
         session.add(model)
@@ -34,7 +32,7 @@ class BaseService(Generic[ModelType, SchemaCreateType, SchemaUpdateType]):
             )
         return model
 
-    def update_by_id(self, session: Session, id: uuid.UUID, payload: SchemaUpdateType):
+    def update_by_id(self, session: Session, id: uuid.UUID, payload: BaseModel):
         # model = self.get_by_id(session, id)
         # set_value(model, payload)
         session.query(ModelType).filter(ModelType.id == id).update(

@@ -3,11 +3,12 @@ from sqlalchemy import and_
 from sqlalchemy.orm import Session, joinedload
 
 from models import Student
+from models.base_model import BaseModel
 from schemas.student_schema import StudentRequest
-from services.base_service import BaseService, SchemaCreateType
+from services.base_service import BaseService, ModelType
 
 
-class StudentService(BaseService[Student, StudentRequest, StudentRequest]):
+class StudentService(BaseService[Student]):
     def create(self, session: Session, payload: StudentRequest):
         if self.get_by_student_id(session, payload.student_id, raise_exception=False):
             raise HTTPException(status_code=409)

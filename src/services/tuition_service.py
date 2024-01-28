@@ -7,10 +7,10 @@ from sqlalchemy.orm import Session
 from models import Tuition
 from schemas.tuition_schema import TuitionRequest
 from services import student_service
-from services.base_service import BaseService, SchemaCreateType
+from services.base_service import BaseService
 
 
-class TuitionService(BaseService[Tuition, TuitionRequest, TuitionRequest]):
+class TuitionService(BaseService[Tuition]):
     def create(self, session: Session, payload: TuitionRequest):
         student_service.get_by_id(session, payload.student_id)
         if self.get_by_student_and_semester(

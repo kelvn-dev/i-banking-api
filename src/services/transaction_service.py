@@ -16,7 +16,7 @@ from schemas.transaction_schema import (
 )
 from schemas.tuition_schema import TuitionUpdate
 from services import tuition_service
-from services.base_service import BaseService, SchemaCreateType
+from services.base_service import BaseService
 from services.provider import sendgrid_service
 from utils.otp_utils import (
     generate_otp_secret_key,
@@ -25,9 +25,7 @@ from utils.otp_utils import (
 )
 
 
-class TransactionService(
-    BaseService[Transaction, TransactionRequest, TransactionUpdate]
-):
+class TransactionService(BaseService[Transaction]):
     def validate_transaction_creation(
         self, session: Session, tuition_id: uuid.UUID, user_id: uuid.UUID
     ):
