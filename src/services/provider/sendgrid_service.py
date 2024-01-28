@@ -5,7 +5,7 @@ from sendgrid.helpers.mail import Mail, To
 
 from config.setting import settings
 from enums.sendgrid_enum import TemplateId
-from models import User
+from models import Student, Tuition, User
 
 
 class SendGridService:
@@ -28,6 +28,25 @@ class SendGridService:
         message.dynamic_template_data = {
             "full_name": user.full_name,
             "otp_code": otp_code,
+        }
+        return self.send(message)
+
+    def send_successful_payment_notification(
+        self, user: User, student: Student, tuition: Tuition
+    ):
+        nth = {
+            1: "1st",
+            2: "2nd",
+            3: "3rd",
+        }
+        message = Mail(to_emails=user.email)
+        message.template_id = TemplateId.SUCCESSFUL_PAYMENT_NOTIFICATION.value
+        message.dynamic_template_data = {
+            "full_name": user.full_name,
+            "student_name": student.full_name,
+            "student_id": student.student_id,
+            "semester_code": nth[tuition.semester_code],
+            "semester_year": tuition.semester_year,
         }
         return self.send(message)
 

@@ -9,8 +9,8 @@ from config.database import Base, get_session
 from models import User
 from schemas.user_schema import UserCreate
 from security.auth0_oidc import Auth0Oidc
-from services import user_service
 from services.provider import auth0_service
+from services.user_service import user_service
 
 #########################################################################################
 #

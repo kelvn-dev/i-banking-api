@@ -4,7 +4,7 @@ from fastapi_restful.inferring_router import InferringRouter
 
 from schemas.student_schema import StudentRequest, StudentWithTuiTionResponse
 from security.user_session import UserSession, get_current_user
-from services import student_service
+from services.student_service import student_service
 
 router = InferringRouter(tags=["Student"])
 

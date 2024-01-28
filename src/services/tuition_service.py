@@ -6,8 +6,8 @@ from sqlalchemy.orm import Session
 
 from models import Tuition
 from schemas.tuition_schema import TuitionRequest
-from services import student_service
 from services.base_service import BaseService
+from services.student_service import student_service
 
 
 class TuitionService(BaseService[Tuition]):

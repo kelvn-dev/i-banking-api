@@ -8,9 +8,7 @@ from fastapi.responses import JSONResponse
 from loguru import logger
 
 from config.database import create_db, create_schema, create_tables
-from config.setting import settings
 from routers.endpoints import create_endpoints
-from security.user_session import get_current_user
 
 app = FastAPI()
 app.add_middleware(
@@ -40,11 +38,6 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content=jsonable_encoder({"detail": modified_details}),
     )
-
-
-@app.get("/api/messages/public")
-def public():
-    return {"text": "This is a public message."}
 
 
 create_endpoints(app)

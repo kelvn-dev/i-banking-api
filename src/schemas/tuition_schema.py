@@ -13,10 +13,6 @@ class TuitionRequest(BaseSchema):
     semester_code: SemesterCode
 
 
-class TuitionUpdate(BaseSchema):
-    is_paid: bool
-
-
 class TuitionResponse(TuitionRequest):
     id: uuid.UUID
     is_paid: bool
