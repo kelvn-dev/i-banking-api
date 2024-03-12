@@ -4,6 +4,7 @@ from fastapi_restful.inferring_router import InferringRouter
 from loguru import logger
 
 from config.auth0_client import auth0_client
+from config.logto_client import client
 from schemas.user_schema import UserProfile, UserUpdate
 from security.user_session import UserSession, get_current_user
 from services.user_service import user_service
