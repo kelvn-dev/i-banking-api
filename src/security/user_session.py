@@ -54,6 +54,7 @@ async def get_current_user(
             auth0_user_id=auth0_user_id,
             email=auth0_user.get("email"),
             balances=10_000_000,
+            avatar=auth0_user.get("picture"),
         )
         user = user_service.create(session, user_schema)
     yield UserSession(user, session, permissions)

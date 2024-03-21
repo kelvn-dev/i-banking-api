@@ -10,5 +10,6 @@ class User(BaseModel):
     email = Column(String(255), nullable=False)
     full_name = Column(String(255))
     phone = Column(String(20))
+    avatar = Column(String(255))
     balances = Column(Float(), nullable=False)
     transactions = relationship("Transaction", uselist=True)
