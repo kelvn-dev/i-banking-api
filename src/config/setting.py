@@ -22,6 +22,11 @@ class Settings(BaseSettings):
     sendgrid_api_key: str
     sendgrid_email_sender: EmailStr
 
+    aws_region: str
+    aws_bucket: str
+    aws_access_key_id: str
+    aws_secret_access_key: str
+
     model_config = SettingsConfigDict(
         env_file=".env", case_sensitive=False, extra="ignore"
     )
