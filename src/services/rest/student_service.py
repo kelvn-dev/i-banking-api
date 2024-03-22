@@ -1,11 +1,9 @@
 from fastapi import HTTPException
-from sqlalchemy import and_
 from sqlalchemy.orm import Session, joinedload
 
 from models import Student
-from models.base_model import BaseModel
 from schemas.student_schema import StudentRequest
-from services.base_service import BaseService, ModelType
+from services.rest.base_service import BaseService
 
 
 class StudentService(BaseService[Student]):

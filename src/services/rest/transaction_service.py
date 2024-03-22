@@ -3,7 +3,6 @@ import uuid
 
 from fastapi import HTTPException
 from loguru import logger
-from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
 from enums.transaction_enum import TransactionStatus
@@ -13,10 +12,10 @@ from schemas.transaction_schema import (
     TransactionRequest,
     TransactionUpdate,
 )
-from services.base_service import BaseService
 from services.provider import sendgrid_service
-from services.tuition_service import tuition_service
-from services.user_service import user_service
+from services.rest.base_service import BaseService
+from services.rest.tuition_service import tuition_service
+from services.rest.user_service import user_service
 from utils.otp_utils import (
     generate_otp_secret_key,
     generate_totp_code,

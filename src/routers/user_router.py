@@ -1,12 +1,10 @@
 from fastapi import Depends
 from fastapi_restful.cbv import cbv
 from fastapi_restful.inferring_router import InferringRouter
-from loguru import logger
 
-from config.auth0_client import auth0_client
 from schemas.user_schema import UserProfile, UserUpdate
 from security.user_session import UserSession, get_current_user
-from services.user_service import user_service
+from services.rest.user_service import user_service
 
 router = InferringRouter(tags=["User"])
 

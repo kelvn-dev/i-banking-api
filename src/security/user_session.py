@@ -1,5 +1,4 @@
 import time
-from datetime import datetime, timezone
 from functools import wraps
 
 from fastapi import Depends, HTTPException
@@ -12,7 +11,7 @@ from models import User
 from schemas.user_schema import UserCreate
 from security.auth0_oidc import Auth0Oidc
 from services.provider import auth0_service
-from services.user_service import user_service
+from services.rest.user_service import user_service
 
 #########################################################################################
 #

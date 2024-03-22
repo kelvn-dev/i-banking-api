@@ -2,7 +2,6 @@ import time
 import uuid
 
 from fastapi import HTTPException
-from pydantic import BaseModel
 from sqlalchemy.orm import Session, joinedload
 
 from enums.transaction_enum import TransactionStatus
@@ -10,7 +9,7 @@ from models.transaction import Transaction
 from models.tuition import Tuition
 from models.user import User
 from schemas.user_schema import UserUpdate
-from services.base_service import BaseService
+from services.rest.base_service import BaseService
 
 
 class UserService(BaseService[User]):

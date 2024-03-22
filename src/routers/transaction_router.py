@@ -10,7 +10,7 @@ from schemas.transaction_schema import (
     TransactionUpdate,
 )
 from security.user_session import UserSession, get_current_user
-from services.transaction_service import transaction_service
+from services.rest.transaction_service import transaction_service
 
 router = InferringRouter(tags=["Transaction"])
 
