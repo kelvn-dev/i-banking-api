@@ -12,13 +12,11 @@ class UserCreate(BaseSchema):
     auth0_user_id: str
     email: EmailStr
     balances: float
-    avatar: str
 
 
 class UserUpdate(BaseSchema):
     full_name: str = None
     phone: str = None
-    avatar: str = None
 
 
 class StudentResponse(BaseSchema):
@@ -52,5 +50,4 @@ class UserProfile(BaseSchema):
     full_name: Optional[str]
     phone: Optional[str]
     balances: float
-    avatar: str
     transactions: list[TransactionResponse]
