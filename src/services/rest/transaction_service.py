@@ -24,23 +24,6 @@ from utils.otp_utils import (
 
 
 class TransactionService(BaseService[Transaction]):
-    def validate_transaction_creation(
-        self, session: Session, tuition_id: uuid.UUID, user_id: uuid.UUID
-    ):
-        """
-        Iterates through transactions with same tuition_id and raise exception if:
-        - Transaction requested by the same user hasn't expired yet
-        """
-        now = int(time.time())
-        transactions = self.get_all_by_tuition_id(session, tuition_id)
-
-        for transaction in transactions:
-            if transaction.user_id == user_id and transaction.otp_expiry_time > now:
-                raise HTTPException(
-                    status_code=409,
-                    detail=f"Requested transaction hasn't expired yet. Please get otp in email to complete transaction",
-                )
-
     def create(self, session: Session, user: User, payload: TransactionRequest):
         tuition = tuition_service.get_by_id_for_update(
             session=session, id=payload.tuition_id
@@ -53,7 +36,14 @@ class TransactionService(BaseService[Transaction]):
         if user.balances < tuition.charges:
             raise HTTPException(status_code=400, detail="Insufficient balances")
 
-        self.validate_transaction_creation(session, payload.tuition_id, user.id)
+        # Iterates through transactions with same tuition_id and return if found
+        now = int(time.time())
+        transactions = self.get_all_by_tuition_id(session, payload.tuition_id)
+
+        for transaction in transactions:
+            if transaction.user_id == user.id and transaction.otp_expiry_time > now:
+                return transaction
+
         otp_secret = generate_otp_secret_key()
         otp_code = generate_totp_code(otp_secret, 300)
         logger.debug(f"OTP: {otp_code}")
